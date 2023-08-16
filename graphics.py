@@ -16,7 +16,7 @@ import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 
 
-def makeHeatmap(dataSimulation,framesSimulation,resultsDir): 
+def makeHeatmap(dataSimulation,framesSimulation,framesRhoMax,prolifCap,resultsDir): 
     
     colors= ["white", "blue", "red"]
     cmap =  matplotlib.colors.ListedColormap(colors)
@@ -34,6 +34,7 @@ def makeHeatmap(dataSimulation,framesSimulation,resultsDir):
         plt.imshow(framesSimulation[loop],cmap=cmap,interpolation='none', vmin=0, vmax=2)
         plt.text(2,25,"t = "+ str('{:}'.format(tempo[loop])), fontsize=16)
         plt.axis('off')
+        plt.grid()
         figsName = resultsDir+"fig"+str(loop+1)+".png"
         plt.savefig(figsName)
         plt.close()
@@ -48,25 +49,53 @@ def makeHeatmap(dataSimulation,framesSimulation,resultsDir):
                   header=False,
                   index= False   
                   )
-
+        
+        fig, ax = plt.subplots()    
+        plt.figure(figsize=(6,6),dpi=300)
+        plt.imshow(framesRhoMax[loop],cmap='PiYG',interpolation='none', vmin=-1, vmax=max(prolifCap))
+        plt.text(2,25,"t = "+ str('{:}'.format(tempo[loop])), fontsize=16)
+        plt.axis('off')
+        plt.grid()
+        plt.colorbar()
+        figsName = resultsDir+"RhoMax"+str(loop+1)+".png"
+        plt.savefig(figsName)
+        plt.close()
+    
 
 def makePlots(dataSimulation,SkmelCurveFit,HacatCurveFit,resultsDir):
     
+    # dataSimulation,SkmelCurveFit,HacatCurveFit,resultsDir
     
     if not os.path.exists(resultsDir):
         os.makedirs(resultsDir)
     else:
         pass
 
-    prol = mlines.Line2D([],[],color='black',marker='o',markersize=8,label='proliferation')
-    die = mlines.Line2D([],[],color='black',marker='P',markersize=8,label='death')
-    mig = mlines.Line2D([],[],color='black',marker='>',markersize=8,label='migration')
-    surv = mlines.Line2D([],[],color='black',marker='s',markersize=8,label='survive')
+    prol = mlines.Line2D([],[],
+                         color='black',
+                         marker='o',
+                         markersize=8,
+                         label='proliferation')
+    die = mlines.Line2D([],[],
+                        color='black',
+                        marker='P',
+                        markersize=8,
+                        label='death')
+    mig = mlines.Line2D([],[],
+                        color='black',
+                        marker='>',
+                        markersize=8,
+                        label='migration')
+    surv = mlines.Line2D([],[],
+                         color='black',
+                         marker='s',
+                         markersize=8,
+                         label='survive')
     legend_elements = [prol,die,mig,surv]
 
 
     ''' 
-    Plot Tumor Growth Kinetics (Skmel) 
+    Plot Tumor Growth Probabilities (Skmel) 
     '''
     
     plt.figure(figsize=(6,6),dpi=300)
@@ -74,51 +103,15 @@ def makePlots(dataSimulation,SkmelCurveFit,HacatCurveFit,resultsDir):
     plt.plot(dataSimulation['iter'],dataSimulation['deathS'],'--bP',linewidth=2,markersize=10,markeredgecolor = 'black')
     plt.plot(dataSimulation['iter'],dataSimulation['migS'],'--b>',linewidth=2,markersize=10,markeredgecolor = 'black')
     plt.plot(dataSimulation['iter'],dataSimulation['survS'],'--bs',linewidth=2,markersize=10,markeredgecolor = 'black')
-    plt.xticks(fontsize=10)
-    plt.yticks(fontsize=10)
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
     plt.legend(handles=legend_elements,loc="best")
-    plt.xlabel('time (A.U.)', fontsize=8)
-    plt.ylabel('Probability of SK-MEL-147 Growth Dynamics', fontsize=8)
+    plt.xlabel('time (A.U.)', fontsize=12)
+    plt.ylabel('Probability of MEL growth dynamics',fontsize=12)
     plt.savefig(resultsDir+"SkmelKinetics.png")
     
-    '''
-    Plot correlation among probabilities SK-MEL-147
-    '''
-    
-    plt.figure(figsize=(6,6),dpi=300)
-    plt.plot(dataSimulation['prolS'],dataSimulation['survS'],'--ko',linewidth=0.5,
-             markersize=10,markeredgecolor = 'black',label = "proliferation vs survival")
-    plt.plot(dataSimulation['prolS'],dataSimulation['deathS'],'--kP',linewidth=0.5,
-             markersize=10,markeredgecolor = 'black',label = "proliferation vs death")
-    plt.plot(dataSimulation['prolS'],dataSimulation['migS'],'--k>',linewidth=0.5,
-             markersize=10,markeredgecolor = 'black',label = "proliferation vs migration")
-    plt.xticks(fontsize=10)
-    plt.yticks(fontsize=10)
-    plt.legend(loc="best")
-    plt.xlabel('Probability of Proliferation', fontsize=10)
-    plt.ylabel('Probability Migration,Survival,Death', fontsize=10)
-    plt.savefig(resultsDir+"SkmelCorrelation.png")
-    
-    '''
-    Plot correlation among probabilities HaCaT
-    '''
-    
-    plt.figure(figsize=(6,6),dpi=300)
-    plt.plot(dataSimulation['prolH'],dataSimulation['survH'],'--ko',linewidth=0.5,
-             markersize=10,markeredgecolor = 'black',label = "proliferation vs survival")
-    plt.plot(dataSimulation['prolH'],dataSimulation['deathH'],'--kP',linewidth=0.5,
-             markersize=10,markeredgecolor = 'black',label = "proliferation vs death")
-    plt.plot(dataSimulation['prolH'],dataSimulation['migH'],'--k>',linewidth=0.5,
-             markersize=10,markeredgecolor = 'black',label = "proliferation vs migration")
-    plt.xticks(fontsize=10)
-    plt.yticks(fontsize=10)
-    plt.legend(loc="best")
-    plt.xlabel('Probability of Proliferation', fontsize=10)
-    plt.ylabel('Probability of Migration,Survival,Death', fontsize=10)
-    plt.savefig(resultsDir+"HaCaTCorrelation.png")
-    
     ''' 
-    Plot Tumor Growth Kinetics (Hacat) 
+    Plot Tumor Growth Probabilities (Hacat) 
     '''
     
     plt.figure(figsize=(6,6),dpi=300)
@@ -126,13 +119,12 @@ def makePlots(dataSimulation,SkmelCurveFit,HacatCurveFit,resultsDir):
     plt.plot(dataSimulation['iter'],dataSimulation['deathH'],'--rP',linewidth=1,markersize=10,markeredgecolor = 'black')
     plt.plot(dataSimulation['iter'],dataSimulation['migH'],'--r>',linewidth=1,markersize=10,markeredgecolor = 'black')
     plt.plot(dataSimulation['iter'],dataSimulation['survH'],'--rs',linewidth=1,markersize=10,markeredgecolor = 'black')
-    plt.xticks(fontsize=10)
-    plt.yticks(fontsize=10)
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
     plt.legend(handles=legend_elements,loc="best")
-    plt.xlabel('time (A.U.)', fontsize=10)
-    plt.ylabel('Probability of HaCaT Growth Dynamics', fontsize=8)
+    plt.xlabel('time (A.U.)', fontsize=12)
+    plt.ylabel('Probability of KCT growth dynamics', fontsize=12)
     plt.savefig(resultsDir+"HacatKinetics.png")
-
 
     ''' 
     Plot Growth Curves
@@ -140,21 +132,19 @@ def makePlots(dataSimulation,SkmelCurveFit,HacatCurveFit,resultsDir):
 
     plt.figure(figsize=(6,6),dpi=300)
     plt.plot(dataSimulation['iter'],dataSimulation['dSdt'],'bo',linewidth=1,
-                 markersize=10,markeredgecolor = 'black',label = "SK-MEL-147")
+                  markersize=10,markeredgecolor = 'black',label = "MEL")
     plt.plot(dataSimulation['iter'],dataSimulation['dHdt'],'ro',linewidth=1,
-                 markersize=10,markeredgecolor = 'black',label = "HaCaT")
-    plt.plot(dataSimulation['iter'],dataSimulation['N'],'--ko',linewidth=1,
-                 markersize=10,markeredgecolor = 'black',label = "HaCaT+SK-MEL-147")
-    plt.plot(dataSimulation['iter'],SkmelCurveFit,'b--',label = "model fit to Skmel Curve")
-    plt.plot(dataSimulation['iter'],HacatCurveFit,'r--',label = "model fit to Hacat Curve")
-    plt.xticks(fontsize=8)
-    plt.yticks(fontsize=8)
-    plt.legend(loc="best",fontsize=8)
-    plt.xlabel('time (A.U)', fontsize=8)
-    plt.ylabel('Density of cells (A.U)', fontsize=8)
+                  markersize=10,markeredgecolor = 'black',label = "KCT")
+    plt.plot(dataSimulation['iter'],SkmelCurveFit,'b--',label = "model fit to MEL Curve")
+    plt.plot(dataSimulation['iter'],HacatCurveFit,'r--',label = "model fit to KCT Curve")
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.legend(loc="best",fontsize=12)
+    plt.xlabel('time (A.U)', fontsize=12)
+    plt.ylabel('Density of cells (A.U)', fontsize=12)
     plt.grid()
     plt.savefig(resultsDir+"GrowthCurveCurveFit.png")
-
+    
 
 def setDictionaryOfResults(dataS,dataFrameKeys):
     
@@ -178,27 +168,3 @@ def makeCurveFit(dataSimulation,paramsHacat,paramsSkmel):
     parameterHacat,_ = curve_fit(models.Velhurst,dataSimulation['iter'],dataSimulation['dHdt'],paramsSkmel)
                    
     return models.Velhurst(dataSimulation['iter'],*parameterSkmel), models.Velhurst(dataSimulation['iter'],*parameterHacat),parameterSkmel,parameterHacat
-
-
-# ''' 
-# Plot Hacat/Skmel Ratio 
-# '''
-# plt.figure(figsize=(6,3.7),dpi=300)
-# plt.plot(time,dataSimulation['ratio'],'--ok',linewidth=2,markersize=10)
-# plt.xticks(fontsize=8)
-# plt.yticks(fontsize=8)
-# plt.title('Cell Frequency Ratio',fontsize=8)
-# plt.xlabel('time (days)', fontsize=8)
-# plt.ylabel('Frequency ratio(Hacat/Skmel)', fontsize=8)
-# plt.savefig(resultsDir+"densityRatio.tiff")
-
-# getMean = np.mean(datacube,axis=0)
-# getStd = np.std(datacube,axis=0)
-    # print('Skmel - K: ',parameterSkmel[0],' rho: ', parameterSkmel[1],' tau: ', parameterSkmel[2])
-    # print('Hacat - K: ',parameterHacat[0],' rho: ',parameterHacat[1],' tau: ',parameterHacat[2])
-    # print('ratio K = ',parameterHacat[0]/parameterSkmel[0])
-
-#mig = mlines.Line2D([],[],color='black',marker='s',markersize=6,label='survive')
-# red_patch = mpatches.Patch(color='red', label='HaCaT')
-# blue_patch = mpatches.Patch(color='blue', label='SK-MEL-147')
-# legend_elements = [red_patch,blue_patch,prol,die,mig]
