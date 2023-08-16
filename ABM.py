@@ -1,5 +1,5 @@
 """
-The function in this module get 2 dicitionary and return 2 numpy array
+The function in this module get 2 dicitionary and return 3 numpy array
     
 dictionary
     seedDict: 
@@ -15,43 +15,54 @@ numpy array
                     and the rows represent the value saved over iteration
     
     framesSimulation: three dimensional array which registrate the spatial dynamic of population over iterations 
+    framesRhoMax: three dimensional array which registrate the spatial distribution of parameter rhoMax over iterations
+    
 """
 
 import numpy as np      
 import random
-from settingInput import squareSide,niter,deltaI,K
-import neighbors
+from settingInput import nRowCols,niter,K,deltaT
+#import neighbors
+import models
 
 def CellularAutomata(seedDict,nghAddressDict):
     
+    t = 1
     framesSimulation = [] 
     dataSimulation = []
-    #t = 0
-    for loop in range(0,niter):
+    framesRhoMax = [[-1]*nRowCols]*nRowCols
+    
+    for loop in range(niter):
         
         listOfCells = list(seedDict.values())
         random.shuffle(listOfCells)
         for cellsLine in listOfCells:
-            cellsLine.updateBooleanNetwork(seedDict,loop)
+            cellsLine.updateBooleanNetwork(seedDict) # ,pMPS,pMPH,loop
             cellsLine.updateTumorGrowthKinetics(seedDict,nghAddressDict)
             
-        Lattice = np.zeros((squareSide,squareSide))
+        
+        Lattice = np.zeros((nRowCols,nRowCols))
+        parameters = np.array(framesRhoMax)
         for cellsLine in seedDict.values():
-            Lattice[cellsLine.index] = cellsLine.id_number
+            Lattice[cellsLine.index] = cellsLine.cellsID
+            parameters[cellsLine.index] = cellsLine.rhoMax
+        [Ps,Ds,Ms,Ss,Ph,Dh,Mh,Sh] = models.updateKineticsProbs(listOfCells)
+        if (loop % 2) == 0:
             
-        if (loop % deltaI) == 0:
-            
-            [Ps,Ds,Ms,Ss,Ph,Dh,Mh,Sh] = neighbors.updateKineticsProbability(listOfCells)
-            dataSimulation.append([
-                                   len(Lattice[Lattice == 1])/K,
+            dataSimulation.append([len(Lattice[Lattice == 1])/K,
                                    len(Lattice[Lattice == 2])/K,
                                    len(Lattice[Lattice != 0])/K,
-                                   loop,
-                                   Ps,Ds,Ms,Ss,Ph,Dh,Mh,Sh
-                                   ])
-                                   
-                
+                                   t,
+                                   Ps,Ds,Ms,Ss,
+                                   Ph,Dh,Mh,Sh
+                                 ])
             framesSimulation.append(Lattice)
-            #t += (1/(Ps+Ds+Ms+Ss+Ph+Dh+Mh+Sh)) #+ (1/(Ph+Dh+Mh+Sh)) 
-            
-    return np.array(dataSimulation),np.array(framesSimulation)
+            framesRhoMax.append(parameters)
+        
+        else:
+            pass
+        
+        t = t + deltaT
+      
+        
+    return np.array(dataSimulation),np.array(framesSimulation),np.array(framesRhoMax)
