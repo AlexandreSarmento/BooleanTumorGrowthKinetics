@@ -13,39 +13,29 @@ def updateNeighbors(self,agents):
     Processing: 
           check the amount of vertex occupied by skmel, hacat and those which are empty.
     Output: 
-          listOfEmptyIndex: first empty neighbors (list of tuple)
-          neighborsInstance: a list of object instantiate in the neighborhood
-          neighborsInstanceIDs: a list of instance attribute id_number 
+          listOfEmptyIndex: first empty neighbors address (list of tuple)
+          numberOfSkmel: number of skmel in the neighborhood (int)
+          numberOfHacat: number of hacat in the neighborhood (int)
+          numberOfEmptyIndex: number of empty neighbors (int)     
           
     ''' 
     
     listOfEmptyIndex = [emptyAddress for emptyAddress in self.nghAddress if emptyAddress not in agents]
     listOfOccupiedIndex = [occupiedAddress for occupiedAddress in self.nghAddress if occupiedAddress in agents]
-   
-    neighborsInstance = []
-    neighborsInstanceIDs = []
-    for loopIDs in range(len(listOfOccupiedIndex)):
+    neighborsInstanceIDs = [agents[idx].cellsID for idx in listOfOccupiedIndex]    
+    
+    numberOfSkmel = neighborsInstanceIDs.count(1)
+    numberOfHacat = neighborsInstanceIDs.count(2)
+    numberOfEmptyIndex = len(listOfEmptyIndex)
         
-        neighborsInstance.append(agents[listOfOccupiedIndex[loopIDs]])
-        neighborsInstanceIDs.append(neighborsInstance[loopIDs].id_number)
-        
-        
-    if agents[self.index].id_number == 1:
-        numberOfSkmel = neighborsInstanceIDs.count(1) + 1
-        numberOfHacat = neighborsInstanceIDs.count(2)
-      
-    else:
-        numberOfSkmel = neighborsInstanceIDs.count(1)
-        numberOfHacat = neighborsInstanceIDs.count(2) + 1
-            
-    return listOfEmptyIndex,len(listOfEmptyIndex),numberOfSkmel,numberOfHacat
+    return listOfEmptyIndex,numberOfEmptyIndex,numberOfSkmel,numberOfHacat
 
 
 def makeNeighborsDicitionary(nrow,ncol,d):
     """
     Input:
-        nrow: number of rows (integer)
-        ncol: number of col (interger)
+        nrow: number of rows (int)
+        ncol: number of col (int)
     Processing:
         create dictionary containing in the keys a tuple representing the cell vértex and in the values a list of tuples representing the
         neighbors vértices
@@ -69,48 +59,46 @@ def makeNeighborsList(index, nrow, ncol,d):
         use list comprehension to create a list of all positions in the cell's neighborhood. Valid positions are 
         those that are within the confines of the domain (nrow, ncol) and not the same as the cell's current position.
     Output:
-        nghList: list of the neighbors vertice of a given cell (list of tuple)
+        nghStyle: dictionary of the focal cell neighbors style. key are interger and values are list of tuple
         
     """
     # Unpack the tuple containing the cell's position
     row, col = index
-    if d == 0:
-        
-        nghList = [(row+i, col+j)
-              for i in [-1,0,1]
-              for j in [-1,0,1]
-              if 0 <= row + i < nrow
-              if 0 <= col + j < ncol
-              if not (j == 0 and i == 0)]
-    else:
-        if d == 1:
-            
-            nghList = [(row+i, col+j)
-                       for i in [-2,-1,0,1,-2]
-                       for j in [-2,-1,0,1,-2]
-                       if 0 <= row + i < nrow
-                       if 0 <= col + j < ncol
-                       if not (j == 0 and i == 0)]
-        
-        else:
-            if d > 1:
-                nghList = [(row+i, col+j)
-                           for i in range(-d,d+1)
-                           for j in range(abs(i)-d,d+1-abs(i))
-                           if 0 <= row + i < nrow
-                           if 0 <= col + j < ncol
-                           if not (j == 0 and i == 0)]
     
-    return nghList
+    nghStyle = {0:[(row+i, col+j)
+                    for i in [-1,0,1]
+                    for j in [-1,0,1]
+                    if 0 <= row + i < nrow
+                    if 0 <= col + j < ncol
+                    if not (j == 0 and i == 0)],
+                
+                1:[(row+i, col+j)
+                    for i in [-2,-1,0,1,-2]
+                    for j in [-2,-1,0,1,-2]
+                    if 0 <= row + i < nrow
+                    if 0 <= col + j < ncol
+                    if not (j == 0 and i == 0)],
+                
+                d: [(row+i, col+j)
+                     for i in range(-d,d+1)
+                     for j in range(abs(i)-d,d+1-abs(i))
+                     if 0 <= row + i < nrow
+                     if 0 <= col + j < ncol
+                     if not (j == 0 and i == 0)]
+                }
+        
+        
+    return nghStyle[d]
 
 
 
-def getCellsSeed(nghVertexDict,density0):
+def getCellsSeed(nghVertexDict,density0,prolifCap):
 
     '''
     Input
         density0: initial number of cells
         nghVertexDict: dictionary where each focal cell address (tuple) are at key and the focal cell neighbors address (list of tuple) are at values
+        prolifCap: proliferation capacity
     Processing
         Here we have to create a dicitionary to seed the cells in random address (row,col) and at same time 
         instatiate an object (Hacat/Skmel) into the specific vertex. Thus, firstly we're going to generate many 
@@ -128,72 +116,12 @@ def getCellsSeed(nghVertexDict,density0):
     
     cellsSeedAddress = list(nghVertexDict.keys())
     seedSkmelIdx = random.sample(cellsSeedAddress, k = skmel0)
-    seedHacatIdx = random.sample(cellsSeedAddress, k = hacat0)
-    
+    seedHacatIdx = random.sample(cellsSeedAddress, k = hacat0) 
+    pmaxS,pmaxH = prolifCap[0],prolifCap[1]
     for j in seedSkmelIdx:
-        skmelDict[j] = cells.Skmel(j,nghVertexDict)
+        skmelDict[j] = cells.Skmel(j,nghVertexDict,pmaxS)
         
     for i in seedHacatIdx:
-        hacatDict[i] = cells.Hacat(i,nghVertexDict)
+        hacatDict[i] = cells.Hacat(i,nghVertexDict,pmaxH)
      
     return {**skmelDict,**hacatDict}
-
-
-def updateKineticsProbability(listOfCells):
-    
-    '''
-    Input
-        listOfCells: list of object Skmel/Hacat instantiated at a given iteration
-    Processing
-        Here we count the amount of cell which proliferate, migrate, died and survive
-    Output
-        Ps: skmel probability of proliferation
-        Ds: skmel probability of death
-        Ms: skmel probability of migration
-        Ss: skmel probability of survive
-        Ph: hacat probability of proliferation
-        Dh: hacat probability of death
-        Mh: hacat probability of migration
-        Sh: hacat probability of survive
-    
-    '''
-    
-    skmelProlif = len([p for p in listOfCells if p.id_number == 1 and p.proliferate == True])
-    skmelDeath = len([p for p in listOfCells if p.id_number == 1 and p.death == True])
-    skmelMig = len([p for p in listOfCells if p.id_number == 1 and p.migrate == True])
-    skmelSurv = len([p for p in listOfCells if p.id_number == 1 and p.survive == True])
-    hacatProlif = len([p for p in listOfCells if p.id_number == 2 and p.proliferate == True])
-    hacatDeath = len([p for p in listOfCells if p.id_number == 2 and p.death == True])
-    hacatMig = len([p for p in listOfCells if p.id_number == 2 and p.migrate == True])
-    hacatSurv = len([p for p in listOfCells if p.id_number == 2 and p.survive == True])
-    
-    Ps = skmelProlif/(skmelProlif+skmelDeath+skmelMig+skmelSurv)
-    Ds = skmelDeath/(skmelProlif+skmelDeath+skmelMig+skmelSurv)
-    Ms = skmelMig/(skmelProlif+skmelDeath+skmelMig+skmelSurv)
-    Ss = skmelSurv/(skmelProlif+skmelDeath+skmelMig+skmelSurv)
-    Ph = hacatProlif/(hacatProlif+hacatDeath+hacatMig+hacatSurv)
-    Dh = hacatDeath/(hacatProlif+hacatDeath+hacatMig+hacatSurv)
-    Mh = hacatMig/(hacatProlif+hacatDeath+hacatMig+hacatSurv)
-    Sh = hacatSurv/(hacatProlif+hacatDeath+hacatMig+hacatSurv)
-    
-    return Ps,Ds,Ms,Ss,Ph,Dh,Mh,Sh
-
-
-
-# def updateDistribution(squareSide,sigma):
-    
-#     point = int(squareSide/2)
-#     seedVertex = np.zeros((squareSide,squareSide))
-
-#     for row in range(squareSide):
-#         for col in range(squareSide):
-#             seedVertex[row,col] = (40000/(4*math.pi*sigma))*np.exp(-((row - point)**2 + (col - point)**2) /(4*sigma))
-            
-            
-#     maskSeedVertex = seedVertex > 0
-#     maskSeedVertexAddress = np.where(maskSeedVertex)
-#     seedVertexAddress = np.vstack((maskSeedVertexAddress[0],maskSeedVertexAddress[1])).T
-#     seedVertexList = [tuple(seedVertexAddress[i,:]) for i in range(len(seedVertexAddress))]
-
-#     return seedVertexList
-
