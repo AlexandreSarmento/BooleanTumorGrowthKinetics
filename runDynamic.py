@@ -44,7 +44,7 @@ import ABM
 import graphics
 import models
 import neighbors
-from settingInput import C0,nRowCols,dataFrameKeys,indexOfngh,paramsHacat,paramsSkmel,prolifCap
+from settingInput import C0,nRowCols,dataFrameKeys,auxGeometry,geometry,paramsHacat,paramsSkmel,prolifCap
 #import pandas as pd
 
 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     rootDir = "C:/Users/Alexandre Sarmento/Documents/PYTHON/UFRN/BooleanKinetics/"
     mainDir = "timeScale/alt/"
     paramsDir = ("C0_"+ str(C0)+
-                 "_ngh_"+str(indexOfngh)+
+                 "_ngh_"+str(auxGeometry)+
                  "_rhoMaxMEL_"+str(prolifCap[0])+
                  "_rhoMaxKCT_"+str(prolifCap[1])+
                  "/")
@@ -67,7 +67,8 @@ if __name__ == "__main__":
     # generate cell address and neighborhood cells address
     nghVertexDict = neighbors.makeNeighborsDicitionary(nrow = nRowCols,
                                                        ncol = nRowCols,
-                                                       d = indexOfngh)
+                                                       d = auxGeometry,
+                                                       geo = geometry)
     # seed the cells at random through domain
     seedDict = neighbors.getCellsSeed(nghVertexDict,C0,prolifCap)
     # start the simulation and release the output
@@ -96,14 +97,3 @@ if __name__ == "__main__":
         file.write('correlation proliferation versus death in hacat: ' + str(hacatPD) + '\n')
     
     file.close()
-    
-    # # # convert a dictionary to a data frame and save all simulation data in a csv 
-    # df_dataSimulation = pd.DataFrame(dataSimulation)
-    # df_dataSimulation.columns = dataFrameKeys
-    # df_dataSimulation.to_csv(
-    #                          resultsDir+"timeserie.csv",
-    #                          sep = ",",
-    #                          encoding = "utf-8",
-    #                          header = True,
-    #                          index = False   
-    #                         )
