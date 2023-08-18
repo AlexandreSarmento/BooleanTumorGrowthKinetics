@@ -31,7 +31,7 @@ def updateNeighbors(self,agents):
     return listOfEmptyIndex,numberOfEmptyIndex,numberOfSkmel,numberOfHacat
 
 
-def makeNeighborsDicitionary(nrow,ncol,d):
+def makeNeighborsDicitionary(nrow,ncol,d,geo):
     """
     Input:
         nrow: number of rows (int)
@@ -43,17 +43,18 @@ def makeNeighborsDicitionary(nrow,ncol,d):
         nghIdxDict: neighbors index dictionary's (dictionary)
     """
     listOfIndex = [(r,c) for r in np.arange(0,nrow) for c in np.arange(0,ncol)]
-    nghIdxDict = {index: makeNeighborsList(index,nrow,ncol,d) for index in listOfIndex}
+    nghIdxDict = {index: makeNeighborsList(index,nrow,ncol,d,geo) for index in listOfIndex}
     
     return nghIdxDict
 
-def makeNeighborsList(index, nrow, ncol,d):
+def makeNeighborsList(index, nrow, ncol,d,geo):
     """
     Input:
         index: cell's vertex (tuple)
         nrow: number of rows (int)
         ncol: number of columns (int)
-        d: id of focal cell neighborhood. 0- Moore 1st order. 1-Moore 2nd order. 2. Von newman 1st order. 3. Von newman 2nd order. 
+        d: auxiliar parameter to calculate neighborhood address (int)
+        geo: type of neighborhood geometry (string) 
 
     Processing:
         use list comprehension to create a list of all positions in the cell's neighborhood. Valid positions are 
@@ -63,32 +64,26 @@ def makeNeighborsList(index, nrow, ncol,d):
         
     """
     # Unpack the tuple containing the cell's position
-    row, col = index
+    row,col = index
     
-    nghStyle = {0:[(row+i, col+j)
-                    for i in [-1,0,1]
-                    for j in [-1,0,1]
-                    if 0 <= row + i < nrow
-                    if 0 <= col + j < ncol
-                    if not (j == 0 and i == 0)],
+    neighbor_geometry = {'moore':[(row+i, col+j)
+                                   for i in range(-d,d+1)
+                                   for j in range(-d,d+1)
+                                   if 0 <= row + i < nrow
+                                   if 0 <= col + j < ncol
+                                   if not (j == 0 and i == 0)
+                                 ],
                 
-                1:[(row+i, col+j)
-                    for i in [-2,-1,0,1,-2]
-                    for j in [-2,-1,0,1,-2]
-                    if 0 <= row + i < nrow
-                    if 0 <= col + j < ncol
-                    if not (j == 0 and i == 0)],
-                
-                d: [(row+i, col+j)
-                     for i in range(-d,d+1)
-                     for j in range(abs(i)-d,d+1-abs(i))
-                     if 0 <= row + i < nrow
-                     if 0 <= col + j < ncol
-                     if not (j == 0 and i == 0)]
-                }
-        
-        
-    return nghStyle[d]
+                         'vonNeumman':[(row+i, col+j)
+                                        for i in range(-d,d+1)
+                                        for j in range(abs(i)-d,d+1-abs(i))
+                                        if 0 <= row + i < nrow
+                                        if 0 <= col + j < ncol
+                                        if not (j == 0 and i == 0)
+                                      ]
+                        }
+
+    return neighbor_geometry[geo]
 
 
 
