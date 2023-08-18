@@ -30,22 +30,23 @@ def CellularAutomata(seedDict,nghAddressDict):
     t = 1
     framesSimulation = [] 
     dataSimulation = []
-    framesRhoMax = [[-1]*nRowCols]*nRowCols
-    
+    preParamsFrames = [[-1]*nRowCols]*nRowCols
+    paramsFrames = []
     for loop in range(niter):
         
         listOfCells = list(seedDict.values())
         random.shuffle(listOfCells)
         for cellsLine in listOfCells:
-            cellsLine.updateBooleanNetwork(seedDict) # ,pMPS,pMPH,loop
+            cellsLine.updateBooleanNetwork(seedDict) 
             cellsLine.updateTumorGrowthKinetics(seedDict,nghAddressDict)
             
         
         Lattice = np.zeros((nRowCols,nRowCols))
-        parameters = np.array(framesRhoMax)
+        parameters = np.array(preParamsFrames)
         for cellsLine in seedDict.values():
             Lattice[cellsLine.index] = cellsLine.cellsID
             parameters[cellsLine.index] = cellsLine.rhoMax
+            
         [Ps,Ds,Ms,Ss,Ph,Dh,Mh,Sh] = models.updateKineticsProbs(listOfCells)
         if (loop % 2) == 0:
             
@@ -57,7 +58,7 @@ def CellularAutomata(seedDict,nghAddressDict):
                                    Ph,Dh,Mh,Sh
                                  ])
             framesSimulation.append(Lattice)
-            framesRhoMax.append(parameters)
+            paramsFrames.append(parameters)
         
         else:
             pass
@@ -65,4 +66,4 @@ def CellularAutomata(seedDict,nghAddressDict):
         t = t + deltaT
       
         
-    return np.array(dataSimulation),np.array(framesSimulation),np.array(framesRhoMax)
+    return np.array(dataSimulation),np.array(framesSimulation),np.array(paramsFrames)
