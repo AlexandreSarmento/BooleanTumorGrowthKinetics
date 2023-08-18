@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Created on Wed Sep 21 07:47:45 2022
 
@@ -16,8 +15,10 @@ nRowCols = 200
 K = nRowCols*nRowCols
 # C0: initial numer of cells (int) 
 C0 = 2000 
-# indexOfngh: id number to set focal cell neighborhood (int). One may check the function makeNeighborsList inside the module neighbors
-indexOfngh = 0  
+# auxGeometry: auxiliar parameter to calculate neighborhood address (int) One may check the function makeNeighborsList inside the module neighbors
+auxGeometry = 1
+# geometry: type of neighborhood geometry (string). Enter with either moore or vonNeumman
+geometry = 'moore'
 # prolifCap: proliferation capacity (list of int). The first element willb assigned to MEL and the second on to KCT
 prolifCap = [5,6]
 # finalTime: final time of simulation (int) 
