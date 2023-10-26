@@ -42,28 +42,28 @@ survH: hacat probability of survive
 import os
 import ABM
 import graphics
-import models
+#import models
 import neighbors
+import outputFile
 from settingInput import C0,nRowCols,dataFrameKeys,auxGeometry,geometry,paramsHacat,paramsSkmel,prolifCap
 #import pandas as pd
 
 
 if __name__ == "__main__":
     
-    
     # let set working directory. Linux user shall be aware how to set the path which is different concerning to windows
-    os.chdir(
-            'C:\\Users\\Alexandre Sarmento\\Documents\\PYTHON\\UFRN\\BooleanKinetics'
-            )
+    workDir = "/home/alexandre/Documents/scripts/python/BooleanKinetics/"
+    
+    os.chdir(workDir)
+            
     # let set an specific directory to save results according to the parameters assigned to lambda 
-    rootDir = "C:/Users/Alexandre Sarmento/Documents/PYTHON/UFRN/BooleanKinetics/"
-    mainDir = "timeScale/alt/"
+    mainDir = "timeScale/tiraTeima/"
     paramsDir = ("C0_"+ str(C0)+
                  "_ngh_"+str(auxGeometry)+
                  "_rhoMaxMEL_"+str(prolifCap[0])+
                  "_rhoMaxKCT_"+str(prolifCap[1])+
                  "/")
-    resultsDir = rootDir+mainDir+paramsDir
+    resultsDir = workDir+mainDir+paramsDir
     # generate cell address and neighborhood cells address
     nghVertexDict = neighbors.makeNeighborsDicitionary(nrow = nRowCols,
                                                        ncol = nRowCols,
@@ -82,18 +82,6 @@ if __name__ == "__main__":
     # get all of data about probabilities, cells density and parameters estimated and make plots
     graphics.makePlots(dataSimulation,SkmelCurveFit,HacatCurveFit,resultsDir)
     # get the probabilities and calculate correlation among them
-    [skmelPS,skmelPM,skmelPD,hacatPS,hacatPM,hacatPD] = models.getCorrelation(dataSimulation)
+    #[skmelPS,skmelPM,skmelPD,hacatPS,hacatPM,hacatPD] = models.getCorrelation(dataSimulation)
     # get the data about curve fit and correlation and save inside a txt file
-    with open(resultsDir+"params.txt", "w") as file:
-        
-        file.write('Skmel - K: ' + str(parameterSkmel[0]) + ' rho: ' + str(parameterSkmel[1]) + ' tau: ' + str(parameterSkmel[2]) + "\n")
-        file.write('Hacat - K: ' + str(parameterHacat[0]) + ' rho: ' + str(parameterHacat[1]) + ' tau: ' + str(parameterHacat[2]) + "\n")
-        file.write('ratio K = ' + str(parameterHacat[0]/parameterSkmel[0]) +"\n")
-        file.write('correlation proliferation versus survival in skmel: ' + str(skmelPS) + '\n')
-        file.write('correlation prolifertion versus migration in skmel: ' + str(skmelPM) + '\n')
-        file.write('correlation proliferation versus death in skmel: ' + str(skmelPD) + '\n')
-        file.write('correlation proliferation versus survival in hacat: ' + str(hacatPS) + '\n')
-        file.write('correlation prolifertion versus migration in hacat: ' + str(hacatPM) + '\n')
-        file.write('correlation proliferation versus death in hacat: ' + str(hacatPD) + '\n')
-    
-    file.close()
+    outputFile.getCurveFitParams(resultsDir,parameterSkmel,parameterHacat)
