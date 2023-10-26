@@ -45,7 +45,7 @@ import graphics
 #import models
 import neighbors
 import outputFile
-from settingInput import C0,nRowCols,dataFrameKeys,auxGeometry,geometry,paramsHacat,paramsSkmel,prolifCap
+from inputData import C0,nRowCols,dataFrameKeys,auxGeometry,geometry,paramsHacat,paramsSkmel,prolifCap
 #import pandas as pd
 
 
