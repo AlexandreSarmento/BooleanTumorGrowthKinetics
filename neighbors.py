@@ -85,8 +85,6 @@ def makeNeighborsList(index, nrow, ncol,d,geo):
 
     return neighbor_geometry[geo]
 
-
-
 def getCellsSeed(nghVertexDict,density0,prolifCap):
 
     '''
@@ -112,7 +110,7 @@ def getCellsSeed(nghVertexDict,density0,prolifCap):
     cellsSeedAddress = list(nghVertexDict.keys())
     seedSkmelIdx = random.sample(cellsSeedAddress, k = skmel0)
     seedHacatIdx = random.sample(cellsSeedAddress, k = hacat0) 
-    pmaxS,pmaxH = prolifCap[0],prolifCap[1]
+    pmaxS,pmaxH = prolifCap
     for j in seedSkmelIdx:
         skmelDict[j] = cells.Skmel(j,nghVertexDict,pmaxS)
         
