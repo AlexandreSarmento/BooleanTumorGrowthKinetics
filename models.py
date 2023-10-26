@@ -1,5 +1,4 @@
 '''
-
 This module harbour some model useful to whole simulation. 
 The function Velhurst is the logistic model present at Morais et al 2017
 The function updateProliferationProbability return population growth be in log phase
@@ -47,6 +46,7 @@ def updateKineticsProbs(listOfCells):
         Sh: hacat probability of survive
     
     '''
+    
     skmelProlif = len([p for p in listOfCells if p.cellsID == 1 and p.proliferate == True])
     skmelDeath = len([p for p in listOfCells if p.cellsID == 1 and p.death == True])
     skmelMig = len([p for p in listOfCells if p.cellsID == 1 and p.migrate == True])
@@ -66,8 +66,9 @@ def updateKineticsProbs(listOfCells):
     Sh = hacatSurv/(hacatProlif+hacatDeath+hacatMig+hacatSurv)
     
     
-    return Ps,Ds,Ms,Ss,Ph,Dh,Mh,Sh
-    
+    return Ps,Ds,Ms,Ss,Ph,Dh,Mh,Sh #,net_skmel,net_hacat
+
+
 def updateMicroEnvironment(SPC,MEL,KCT):
     
     '''
@@ -88,6 +89,7 @@ def updateMicroEnvironment(SPC,MEL,KCT):
       
     return migration, proliferation
     
+
 def getCorrelation(dataSimulation):
     
     skmelPS, _ = pearsonr(dataSimulation['survS'],dataSimulation['prolS'])
