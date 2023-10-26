@@ -1,4 +1,5 @@
 '''
+
 This module harbour some model useful to whole simulation. 
 The function Velhurst is the logistic model present at Morais et al 2017
 The function updateProliferationProbability return population growth be in log phase
