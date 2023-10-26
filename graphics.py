@@ -1,9 +1,6 @@
 """
-
 This module contain functions that generates heatmaps, plot the growth curves of
 populations, probabilities of population growth dynamic and make curve fit
-
-
 """
 
 import numpy as np
