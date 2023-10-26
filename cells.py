@@ -1,6 +1,9 @@
 '''
 This script have the mother class Population and the daugther class Skmel and Hacat
 
+The function updateBooleanNetwork apply the equation 3 to 9 in the manuscript which also are atribute of class, than we go through
+the function updateTumorGrowthDynamic which generates the states transiton    
+
 '''
 
 import neighbors
@@ -13,21 +16,19 @@ class Population():
     
     def __init__(self,index,nghVertexDict,pmax):
         
-        
         self.index = index # index: the address in term of row and col of the cell (tuple)
         self.nghAddress = nghVertexDict[self.index] # nghAddress: list of tuples. here we get the 
         #values of a dicitionay as a list of tuples
         self.CC = settingInput.K ## self.CC: carrying capacity (int)
-        
         
     def updateBooleanNetwork(self,agents): #probMigProlS,probMigProlH,i
         
         [listOfEmptyIndex,numberOfEmptyIndex,numberOfSkmel,numberOfHacat] = neighbors.updateNeighbors(self,agents)
         [migration,proliferation] = models.updateMicroEnvironment(numberOfEmptyIndex,numberOfSkmel,numberOfHacat)
         pprol = 1 - (len(agents)/self.CC)
+ 
         if self.cellsID == 1:
-            
-            self.death = numberOfEmptyIndex == 0 and self.rhoMax <= 0
+            self.death = self.rhoMax <= 0 and numberOfEmptyIndex == 0
             self.proliferate = (numberOfEmptyIndex >= 1) and (proliferation or pprol > random.uniform(0,1)) and not self.death
             self.migrate = (numberOfEmptyIndex >= 1) and migration and not self.death
             self.survive = not self.death and not self.proliferate and not self.migrate
@@ -35,7 +36,7 @@ class Population():
             #self.death = self.pdie > random.uniform(0,1)
             self.survive = self.rhoMax <= 0
             self.proliferate = (numberOfEmptyIndex >= 1) and (proliferation or pprol > random.uniform(0,1)) and not self.survive           
-            self.migrate = (numberOfEmptyIndex >= 1) and migration and not self.survive
+            self.migrate = (numberOfEmptyIndex >= 1) and migration and not self.survive 
             self.death = not self.survive and not self.proliferate and not self.migrate
             
         self.listOfEmptyIndex = listOfEmptyIndex
