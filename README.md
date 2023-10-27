@@ -12,6 +12,8 @@ The iKM_notebook.ipyb contain the algoritm adapted from Berestovsky et al 2013 t
 data_timepoint.R read the cell count per time point and generate the time serie present in Morais et al 2017
 as csv file
 
+setData.R re
+
 
 
 
