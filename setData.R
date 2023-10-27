@@ -5,7 +5,7 @@ path2inputFile <- "/IKM/popTimeSerie_"
 path2outputFile <- "/IKM/binAvg"
 inputFileName = paste0(working_dir,path2inputFile)
 outputFileName = paste0(working_dir,path2inputFile)
-numberOfInputFiles = 100
+numberOfInputFiles = 5
 allTimePoints = list(1,2,3,4,5,6,7,8)
 
 
