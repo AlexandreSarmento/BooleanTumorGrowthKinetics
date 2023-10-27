@@ -17,6 +17,8 @@ functions inside package BoolNet and Binarize.
 
 binLearn.R binarize time serie according kmeans and BASC, generate a consensus of iterative k-means and learn boolean network
 
+local_density2.R calculate the density of keratinocytes throughout focal cell neighborhood and generate heatmap
+
 
 
 
