@@ -8,18 +8,20 @@ the function updateTumorGrowthDynamic which generates the states transiton
 
 import neighbors
 import random
-#import basin2attractor
 import models
-import settingInput
+import inputData
 
 class Population():
     
     def __init__(self,index,nghVertexDict,pmax):
         
+        
         self.index = index # index: the address in term of row and col of the cell (tuple)
         self.nghAddress = nghVertexDict[self.index] # nghAddress: list of tuples. here we get the 
         #values of a dicitionay as a list of tuples
-        self.CC = settingInput.K ## self.CC: carrying capacity (int)
+        self.CC = inputData.K ## self.CC: carrying capacity (int)
+        
+
         
     def updateBooleanNetwork(self,agents): #probMigProlS,probMigProlH,i
         
@@ -28,14 +30,13 @@ class Population():
         pprol = 1 - (len(agents)/self.CC)
  
         if self.cellsID == 1:
-            self.death = self.rhoMax <= 0 and numberOfEmptyIndex == 0
-            self.proliferate = (numberOfEmptyIndex >= 1) and (proliferation or pprol > random.uniform(0,1)) and not self.death
+            self.death = (self.rhoMax <= 0) and (numberOfEmptyIndex == 0)
+            self.proliferate = (numberOfEmptyIndex >= 1) and (proliferation or (pprol > random.uniform(0,1))) and not self.death
             self.migrate = (numberOfEmptyIndex >= 1) and migration and not self.death
             self.survive = not self.death and not self.proliferate and not self.migrate
         else:
-            #self.death = self.pdie > random.uniform(0,1)
             self.survive = self.rhoMax <= 0
-            self.proliferate = (numberOfEmptyIndex >= 1) and (proliferation or pprol > random.uniform(0,1)) and not self.survive           
+            self.proliferate = (numberOfEmptyIndex >= 1) and (proliferation or (pprol > random.uniform(0,1))) and not self.survive           
             self.migrate = (numberOfEmptyIndex >= 1) and migration and not self.survive 
             self.death = not self.survive and not self.proliferate and not self.migrate
             
