@@ -2,7 +2,6 @@ import numpy as np
 import random
 import cells
 import math
-#from collections import Counter
 
 
 def updateNeighbors(self,agents):
