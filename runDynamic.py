@@ -42,14 +42,13 @@ survH: hacat probability of survive
 import os
 import ABM
 import graphics
-#import models
 import neighbors
 import outputFile
 from inputData import C0,nRowCols,dataFrameKeys,auxGeometry,geometry,paramsHacat,paramsSkmel,prolifCap
-#import pandas as pd
 
 
 if __name__ == "__main__":
+    
     
     # let set working directory. Linux user shall be aware how to set the path which is different concerning to windows
     workDir = "/home/alexandre/Documents/scripts/python/BooleanKinetics/"
@@ -57,7 +56,7 @@ if __name__ == "__main__":
     os.chdir(workDir)
             
     # let set an specific directory to save results according to the parameters assigned to lambda 
-    mainDir = "timeScale/tiraTeima/"
+    mainDir = "timeScale/"
     paramsDir = ("C0_"+ str(C0)+
                  "_ngh_"+str(auxGeometry)+
                  "_rhoMaxMEL_"+str(prolifCap[0])+
