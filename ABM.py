@@ -21,8 +21,7 @@ numpy array
 
 import numpy as np      
 import random
-from settingInput import nRowCols,niter,K,deltaT
-#import neighbors
+from inputData import nRowCols,niter,K,deltaT
 import models
 
 def CellularAutomata(seedDict,nghAddressDict):
