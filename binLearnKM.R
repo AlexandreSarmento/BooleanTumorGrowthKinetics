@@ -7,10 +7,10 @@ library(BoolNet)
 library(Binarize)
 
 # call modules
-source("C:/R-4.2.2/dataAnalysis_UFRN/BooleanNetworkBioME/booleanKinetics/iterativeKM.R")
-source("C:/R-4.2.2/dataAnalysis_UFRN/BooleanNetworkBioME/booleanKinetics/setData.R")
-source("C:/R-4.2.2/dataAnalysis_UFRN/BooleanNetworkBioME/booleanKinetics/conssensus.R")
-source("C:/R-4.2.2/dataAnalysis_UFRN/BooleanNetworkBioME/booleanKinetics/conssensus2.R")
+source("/home/user/mainFOlder/anySubFolder/iterativeKM.R")
+source("/home/user/mainFOlder/anySubFolder/booleanKinetics/setData.R")
+source("/home/user/mainFOlder/anySubFolder/conssensus.R")
+source("/home/user/mainFOlder/anySubFolder/conssensus2.R")
 
 # Iterative k-mean binarization and consennsus
 binRepliIKM <- readBinDataIKM(inputFileName,
@@ -81,7 +81,7 @@ ibn <- reconstructNetwork(consIKM,
 ibn
 
 # Set a boolean network in a file with extension bn
-path2bn <- "C:/R-4.2.2/dataAnalysis_UFRN/BooleanNetworkBioME/booleanKinetics/popNet.bn" 
+path2bn <- "/home/user/mainFOlder/anySubFolder/popNet.bn" 
 # generate the file with bn extension cotaining the boolean network
 try({
   sink(path2bn)
@@ -117,22 +117,3 @@ plotStateGraph(attr,highlightAttractors = TRUE,
                                colorBasinsEdgeAlpha    = .2,
                                colorAttractorNodeAlpha = 1,
                                colorAttractorEdgeAlpha = 1))
-# # Set a probabilistic boolean network in a file with extension bn
-# setwd("C:/R-4.2.2/dataAnalysis_UFRN/BooleanNetworkBioME/booleanKinetics")
-# path2probn <- "C:/R-4.2.2/dataAnalysis_UFRN/BooleanNetworkBioME/booleanKinetics/probPopNet.bn" 
-# 
-# # probabilities
-# try({
-#   sink(path2probn)
-#   cat("targets, factors \n")
-#   cat("HaCat, Skmel \n")
-#   cat("Skmel, Skmel \n")
-#   cat("E, !Skmel | !HaCat \n")
-# sink()}, silent = T)
-# 
-# # Load and Check the boolean network 
-# probNet <- loadNetwork(path2probn)
-# print(probNet)
-# search for attractor
-# probAttr <- markovSimulation(probNet)
-# probAttr
