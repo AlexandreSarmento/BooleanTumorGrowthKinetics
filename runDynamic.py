@@ -51,12 +51,12 @@ if __name__ == "__main__":
     
     
     # let set working directory. Linux user shall be aware how to set the path which is different concerning to windows
-    workDir = "/home/alexandre/Documents/scripts/python/BooleanKinetics/"
+    workDir = "/home/user/mainFolder/"
     
     os.chdir(workDir)
             
     # let set an specific directory to save results according to the parameters assigned to lambda 
-    mainDir = "timeScale/"
+    mainDir = "subFolder/"
     paramsDir = ("C0_"+ str(C0)+
                  "_ngh_"+str(auxGeometry)+
                  "_rhoMaxMEL_"+str(prolifCap[0])+
