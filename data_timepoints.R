@@ -6,7 +6,7 @@ library(dplyr)
 library(tidyr)
 
 # set working directory
-setwd("C:/R-4.2.2/dataAnalysis_UFRN/BooleanNetworkBioME/booleanKinetics/exp16_txt")
+setwd("/home/user/mainFolder/exp16_txt")
 files = dir()
 
 # read files
